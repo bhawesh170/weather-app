@@ -3,12 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <meta http-equiv="X-UA-Compatible" content="ie=edge"> -->
-    <title>Bhawesh Sharma - MY PORTFOLIO</title>
-    <link rel="icon" type="image/png" href="Portfolio.png">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://kit.fontawesome.com/037a99e28a.js" crossorigin="anonymous"></script>
+    <title>Weather APP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            gap: 30px;
+        }
+        .weather-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-size: 30px;
+        }
+    </style>
 </head>
 <body>
-  <div class="weather-container" id="weather">Loading weather...</div>
+    <div class="weather-container" id="weather">Loading weather...</div>
+    <script>
+        const apiKey = 'cfb0dff435f74223865180535251510';
+        function fetchWeather(lat, lon) {
+  const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${lat},${lon}`;
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      const temp = data.current.temp_c;
+      const condition = data.current.condition.text;
+      const icon = data.current.condition.icon;
+      const location = data.location.name;
+      const feelsLike = data.current.feelslike_c;
+
+      document.getElementById('weather').innerHTML = `${location}<br>
+        <img src="https:${icon}" alt="${condition}" style="vertical-align:middle;">
+        🌡️ ${temp}°C | ${condition}<br>
+        🌡️ Feels like: ${feelsLike}°C`;
+    })
+    .catch(err => {
+      document.getElementById('weather').textContent = 'Weather data unavailable';
+      console.error(err);
+    });
+}
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      fetchWeather(lat, lon);
+    },
+    error => {
+      document.getElementById('weather').textContent = 'Location access denied';
+      console.error(error);
+    }
+  );
+} else {
+  document.getElementById('weather').textContent = 'Geolocation not supported';
+}
+    </script>
 </body>
+</html>
